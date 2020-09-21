@@ -8,7 +8,7 @@ def scrape():
     executable_path = {'executable_path':'/Users/pkrosoff/Downloads/chromedriver'}
     browser = Browser('chrome', **executable_path, headless=False)
 
-    #84%2C204&blank_scope=Latest"
+    url = "https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest"
     browser.visit(url)
     html = browser.html
     #scrape title
@@ -61,6 +61,6 @@ def scrape():
         }
         hemispheres.append(hemisphere_dict)
 #combine to fill data dict
-    mars_biz = {"news_article": mars_news, "featured_image": featured_image_url, "fact_table": fact_table, "hemispheres": hemispheres_dict}
+    mars_biz = {"news_article": mars_news, "featured_image": featured_image_url, "fact_table": fact_table, "hemispheres": hemisphere_dict}
 
     return mars_biz
