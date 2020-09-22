@@ -1,13 +1,16 @@
 from flask import Flask, render_template, redirect, url_for
 import pymongo
-from mars_scrape import scrape
+import mars_scrape
 
 conn = 'mongodb://localhost:27017'
 client = pymongo.MongoClient(conn)
 
 db = client.marsDB
-mars_site = db.marsDB
-mars_site.insert_one(scrape)
+
+mars_site = db.mars_site.find()
+db.mars_site.drop()
+db.mars_site.insert_one(mars_scrape)
+
 
 results = mars_site.find()
 for result in results:

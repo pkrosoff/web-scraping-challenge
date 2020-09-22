@@ -74,4 +74,4 @@ def scrape():
 #combine to fill data dict
     mars_biz = {"news_article": mars_news, "featured_image": featured_image_url, "fact_table": fact_table, "hemispheres": hemisphere_dict}
 
-    return mars_biz
+return mars_biz
