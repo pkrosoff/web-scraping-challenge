@@ -1,16 +1,21 @@
-def scrape():    
-    import os
-    from bs4 import BeautifulSoup
-    from splinter import Browser
-    import requests
-    import pandas as pd
 
+import os
+from bs4 import BeautifulSoup
+from splinter import Browser
+import requests
+import pandas as pd
+import time
+
+def scrape():
     executable_path = {'executable_path':'/Users/pkrosoff/Downloads/chromedriver'}
     browser = Browser('chrome', **executable_path, headless=False)
+
 
     url = "https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest"
     browser.visit(url)
     html = browser.html
+    time.sleep(5)
+
     #scrape title
     soup = BeautifulSoup(html,'html.parser')
     sections = soup.find('li', class_='slide')
@@ -28,6 +33,8 @@ def scrape():
     url = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
     browser.visit(url)
     html = browser.html
+    time.sleep(5)
+
     soup = BeautifulSoup(html,'html.parser')
     article = soup.find('article', class_='carousel_item')
     div = article.find('div', class_='default floating_text_area ms-layer')
@@ -36,7 +43,9 @@ def scrape():
     url = url.replace('/spaceimages/?search=&category=Mars','')
     featured_image_url = f'{url}{image}'
 
+    url = "https://space-facts.com/mars/"
     browser.visit(url)
+    time.sleep(5)
     table = pd.read_html(url)
     df = table[0]
     df.columns=["Parameter","Measurement"]
@@ -47,10 +56,12 @@ def scrape():
     url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
     browser.visit(url)
     html = browser.html
+    time.sleep(5)
+
     soup = BeautifulSoup(html,'html.parser')
     hemispheres = []
-    item = soup.find_all('div', class_='item')
-    for item in item:
+    items = soup.find_all('div', class_='item')
+    for item in items:
         description = item.find('div', class_='description')
         image_title = (description.find('h3')).text
         partial_image_url = item.find('img', class_='thumb')['src']
