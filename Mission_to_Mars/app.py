@@ -1,42 +1,25 @@
 from flask import Flask, render_template, redirect, url_for
-import pymongo
+from flask_pymongo import PyMongo
 import mars_scrape
 
-conn = 'mongodb://localhost:27017'
-client = pymongo.MongoClient(conn)
+app = Flask(__name__)
 
-db = client.marsDB
+app.config["MONGO_URI"] = "mongodb://localhost:27017/mars_db"
+mongo = PyMongo(app)
 
-mars_site = db.mars_site.find()
-db.mars_site.drop()
-db.mars_site.insert_one(mars_scrape)
-
-
-results = mars_site.find()
-for result in results:
-    print(result)
+@app.route("/")
+def index():
+    mars_biz = mongo.db.mars_site.find_one()
+    return render_template("index.html", mars_biz=mars_biz)
 
 
+@app.route("/scrape")
+def scraper():
+    mars_biz = mongo.db.mars_site
+    mars_again = mars_scrape.scrape()
+    mars_biz.update({}, mars_again, upsert=True)
+    return redirect(url_for('index'), code=302)
 
 
-# app = Flask(__name__)
-
-# app.config["MONGO_URI"] = "mongodb://localhost:27017/craigslist_app"
-# mongo = PyMongo(app)
-
-# @app.route("/")
-# def index():
-#     listings = mongo.db.listings.find_one()
-#     return render_template("index.html", listings=listings)
-
-
-# @app.route("/scrape")
-# def scraper():
-#     listings = mongo.db.listings
-#     listings_data = scrape_craigslist.scrape()
-#     listings.update({}, listings_data, upsert=True)
-#     return redirect(url_for('index'), code=302)
-
-
-# if __name__ == "__main__":
-#     app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
